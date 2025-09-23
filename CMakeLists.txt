@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(FrameGen)
+project(SOGLR)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -19,13 +19,11 @@ include(cmake/glm.cmake)
 add_library(glad STATIC vendor/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendor/glad/include)
 
-add_executable(FrameGen src/main.cpp)
-
-file(GLOB_RECURSE FRAMEGEN_SOURCES src/*.cpp src/*.c)
-target_sources(FrameGen PRIVATE ${FRAMEGEN_SOURCES})
-target_link_libraries(FrameGen PRIVATE glfw opengl32 glad glm::glm)
-target_include_directories(FrameGen PUBLIC
+add_library(SOGLR STATIC src/dummy.cpp)
+target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm::glm)
+target_include_directories(SOGLR PUBLIC
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/vendor/glad/include
     ${PROJECT_SOURCE_DIR}/
+    ${PROJECT_SOURCE_DIR}/build/_deps/glm-src/glm
 )

@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include <fstream>
+#include <istream>
 #include <glm/glm.hpp>
 
 namespace Rendering
