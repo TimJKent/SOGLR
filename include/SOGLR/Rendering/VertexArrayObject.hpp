@@ -21,21 +21,22 @@ namespace Rendering
             glDeleteVertexArrays(1, &renderer_id_);
         }
 
-        void AddVertexBuffer(const VertexBuffer &vb)
+        void AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vb)
         {
             glBindVertexArray(renderer_id_);
-            vb.Bind();
+            vb->Bind();
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
         }
 
-        void SetIndexBuffer(const IndexBuffer &index_buffer)
+        void SetIndexBuffer(const std::shared_ptr<IndexBuffer> &index_buffer)
         {
-            index_count_ = index_buffer.Count();
             glBindVertexArray(renderer_id_);
-            index_buffer.Bind();
+            index_buffer->Bind();
+            index_count_ = index_buffer->Count();
+            glBindVertexArray(0);
         }
 
         void Bind() const

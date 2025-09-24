@@ -29,8 +29,8 @@ namespace Rendering
                 return false;
             }
 
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
             return true;
         }
@@ -41,17 +41,22 @@ namespace Rendering
             glDrawElements(GL_TRIANGLES, vao.IndexCount(), GL_UNSIGNED_INT, nullptr);
         }
 
-        void DrawRenderObject(const RenderObject &obj)
+        void DrawRenderObject(std::shared_ptr<RenderObject> obj)
         {
-            obj.Bind();
-            glDrawElements(GL_TRIANGLES, obj.IndexCount(), GL_UNSIGNED_INT, nullptr);
+            obj->Bind();
+            if (scene_camera_)
+            {
+                obj->GetShader()->SetUniformMat4f("uProjection", scene_camera_->GetProjectionMatrix());
+                obj->GetShader()->SetUniformMat4f("uView", scene_camera_->GetViewMatrix());
+            }
+            glDrawElements(GL_TRIANGLES, obj->IndexCount(), GL_UNSIGNED_INT, nullptr);
         }
 
         void DrawRenderList()
         {
-            for (const auto &obj : render_list_)
+            for (auto &obj : render_list_)
             {
-                DrawRenderObject(*obj);
+                DrawRenderObject(obj);
             }
         }
 
@@ -60,7 +65,7 @@ namespace Rendering
             render_list_.push_back(obj);
         }
 
-        std::shared_ptr<RenderObject> CreateRenderObject(const IndexBuffer &ibo, const VertexBuffer &vbo, std::shared_ptr<Shader> shader)
+        std::shared_ptr<RenderObject> CreateRenderObject(const std::shared_ptr<IndexBuffer> &ibo, const std::shared_ptr<VertexBuffer> &vbo, std::shared_ptr<Shader> shader)
         {
             std::shared_ptr<RenderObject> obj = std::make_shared<RenderObject>();
             obj->SetModelData(ibo, vbo);
@@ -94,8 +99,14 @@ namespace Rendering
 
         bool IsValid() const { return is_valid_; }
 
+        void SetSceneCamera(std::shared_ptr<Camera> camera)
+        {
+            scene_camera_ = camera;
+        }
+
     private:
         std::vector<std::shared_ptr<RenderObject>> render_list_;
+        std::shared_ptr<Camera> scene_camera_;
         std::chrono::time_point<std::chrono::high_resolution_clock> frame_start_time_;
         std::chrono::duration<float> delta_time_;
         bool is_valid_ = false;

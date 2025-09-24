@@ -12,7 +12,7 @@ namespace Rendering
         VertexBuffer(std::vector<float> verts)
             : count_(static_cast<uint32_t>(verts.size()))
         {
-            glCreateBuffers(1, &render_id_);
+            glGenBuffers(1, &render_id_);
             glBindBuffer(GL_ARRAY_BUFFER, render_id_);
             glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float), verts.data(), GL_STATIC_DRAW);
         }

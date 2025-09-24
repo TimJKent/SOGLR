@@ -9,12 +9,12 @@ namespace Rendering
     class IndexBuffer
     {
     public:
-        IndexBuffer(const std::vector<uint32_t> &data)
+        IndexBuffer(const std::vector<GLuint> &data)
             : count_(data.size())
         {
             glGenBuffers(1, &renderer_id_);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, count_ * sizeof(uint32_t), data.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, count_ * sizeof(GLuint), data.data(), GL_STATIC_DRAW);
         }
 
         ~IndexBuffer()

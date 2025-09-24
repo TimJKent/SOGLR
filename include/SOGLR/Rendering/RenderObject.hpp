@@ -8,6 +8,7 @@
 #include "Rendering/VertexBuffer.hpp"
 
 #include <memory>
+#include <iostream>
 
 namespace Rendering
 {
@@ -18,9 +19,9 @@ namespace Rendering
 
         void SetShader(const std::shared_ptr<Shader> &shader) { shader_ = shader; }
 
-        void SetModelData(const IndexBuffer &ibo, const VertexBuffer &vbo)
+        void SetModelData(const std::shared_ptr<IndexBuffer> &ibo, const std::shared_ptr<VertexBuffer> &vbo)
         {
-            index_count_ = ibo.Count();
+            index_count_ = ibo->Count();
             vao_.AddVertexBuffer(vbo);
             vao_.SetIndexBuffer(ibo);
         }
@@ -37,15 +38,21 @@ namespace Rendering
             {
                 shader_->Bind();
                 glm::mat4 model = glm::mat4(1.0f);
-                model = glm::scale(model, scale_);
+                model = glm::translate(model, position_);
                 model = glm::rotate(model, glm::radians(rotation_.x), glm::vec3(1, 0, 0));
                 model = glm::rotate(model, glm::radians(rotation_.y), glm::vec3(0, 1, 0));
                 model = glm::rotate(model, glm::radians(rotation_.z), glm::vec3(0, 0, 1));
-                model = glm::translate(model, position_);
+                model = glm::scale(model, scale_);
                 shader_->SetUniformMat4f("uModel", model);
+            }
+            else
+            {
+                std::cout << "Shader not bound for RenderObject!" << std::endl;
             }
             vao_.Bind();
         }
+
+        std::shared_ptr<Shader> GetShader() { return shader_; }
 
         uint32_t IndexCount() const { return index_count_; }
 

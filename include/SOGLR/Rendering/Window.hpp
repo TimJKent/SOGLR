@@ -74,6 +74,8 @@ namespace Rendering
             return glfwGetKey(window_, key) == GLFW_PRESS;
         }
 
+        bool IsValid() const { return is_valid_; }
+
     private:
         GLFWwindow *window_;
         bool is_valid_ = false;
