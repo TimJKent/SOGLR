@@ -15,7 +15,7 @@ namespace Rendering
         ~Camera() = default;
 
         Rendering::Transform &GetTransform() { return transform_; }
-        glm::mat4 GetProjectionMatrix() { return glm::perspective(glm::radians(90.0f), aspectRatio, 0.1f, 100.0f); }
+        glm::mat4 GetProjectionMatrix() { return glm::perspective(glm::radians(90.0f), aspect_ratio_, 0.1f, 100.0f); }
         glm::mat4 GetViewMatrix()
         {
             glm::mat4 view = glm::mat4(1.0f);
@@ -26,8 +26,13 @@ namespace Rendering
             return view;
         }
 
+        void SetAspectRatio(float aspect_ratio)
+        {
+            aspect_ratio_ = aspect_ratio;
+        }
+
     private:
         Rendering::Transform transform_;
-        float aspectRatio = 1.0f;
+        float aspect_ratio_ = 1.0f;
     };
 }
