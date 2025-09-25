@@ -6,6 +6,8 @@
 #include "Rendering/IndexBuffer.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Rendering/RenderObject.hpp"
+#include "Rendering/Mesh.hpp"
+#include "Rendering/Model.hpp"
 #include "Rendering/Shader.hpp"
 #include "Rendering/Transform.hpp"
 #include "Rendering/VertexArrayObject.hpp"

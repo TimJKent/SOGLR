@@ -4,6 +4,8 @@
 #include "Math/Vector.h"
 #include <glad/glad.h>
 
+#define _DEBUG
+
 namespace Rendering
 {
     class VertexBuffer

@@ -12,6 +12,8 @@ find_package(OpenGL REQUIRED)
 include(cmake/glfw.cmake)
 # GLM
 include(cmake/glm.cmake)
+# Assimp
+include (cmake/assimp.cmake)
 
 ### END DEPS ###
 
@@ -20,7 +22,7 @@ add_library(glad STATIC vendor/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendor/glad/include)
 
 add_library(SOGLR STATIC src/dummy.cpp)
-target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm::glm)
+target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm::glm assimp)
 target_include_directories(SOGLR PUBLIC
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/vendor/glad/include
