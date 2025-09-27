@@ -44,11 +44,7 @@ namespace Rendering
         void DrawRenderObject(std::shared_ptr<RenderObject> obj)
         {
             obj->Bind();
-            if (scene_camera_)
-            {
-                obj->GetShader()->SetUniformMat4f("uProjection", scene_camera_->GetProjectionMatrix());
-                obj->GetShader()->SetUniformMat4f("uView", scene_camera_->GetViewMatrix());
-            }
+
             glDrawElements(GL_TRIANGLES, obj->IndexCount(), GL_UNSIGNED_INT, nullptr);
         }
 

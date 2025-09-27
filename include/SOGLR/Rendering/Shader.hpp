@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <string>
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include <fstream>
 #include <istream>
 #include <glm/glm.hpp>
@@ -24,6 +26,24 @@ namespace Rendering
 
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
+
+            // Set up UBO for camera matrices
+            block_index_ = glGetUniformBlockIndex(renderer_id_, "Matrices");
+            if (block_index_ != GL_INVALID_INDEX)
+            {
+                glUniformBlockBinding(renderer_id_, block_index_, 0);
+
+                glGenBuffers(1, &ubo_matrices_);
+                glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices_);
+                glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + 1 * sizeof(glm::vec3), NULL, GL_DYNAMIC_DRAW);
+                glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+                glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices_, 0, 2 * sizeof(glm::mat4) + sizeof(glm::vec3));
+            }
+            else
+            {
+                ubo_matrices_ = 0; // Fallback to individual uniforms
+            }
         }
 
         uint32_t Compile(const std::string &shaderPath, uint32_t type)
@@ -51,15 +71,19 @@ namespace Rendering
             if (!success)
             {
                 glGetShaderInfoLog(shader_id, 512, NULL, infoLog);
-                std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
+                std::cout << "ERROR::SHADER::COMPILATION_FAILED\n"
                           << infoLog << std::endl;
-            };
+            }
 
             return shader_id;
         }
 
         ~Shader()
         {
+            if (ubo_matrices_ != 0)
+            {
+                glDeleteBuffers(1, &ubo_matrices_);
+            }
             glDeleteProgram(renderer_id_);
         }
 
@@ -71,6 +95,19 @@ namespace Rendering
         void Unbind() const
         {
             glUseProgram(0);
+        }
+
+        void SetCameraMatrices(const glm::mat4 &view, const glm::mat4 &projection, const glm::vec3 &camera_pos)
+        {
+            if (block_index_ != GL_INVALID_INDEX && ubo_matrices_ != 0)
+            {
+                // Use UBO
+                glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices_);
+                glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
+                glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+                glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4) * 2, sizeof(glm::vec3), glm::value_ptr(camera_pos));
+                glBindBuffer(GL_UNIFORM_BUFFER, 0);
+            }
         }
 
         void SetUniformMat4f(const char *name, const glm::mat4 &matrix)
@@ -93,5 +130,7 @@ namespace Rendering
 
     private:
         uint32_t renderer_id_;
+        uint32_t block_index_;
+        uint32_t ubo_matrices_;
     };
 } // namespace Rendering

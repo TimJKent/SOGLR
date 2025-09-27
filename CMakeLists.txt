@@ -3,6 +3,30 @@ project(SOGLR)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Set default build type to Release if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
+# Global optimization settings that will affect all targets including Assimp
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    if(MSVC)
+        add_compile_options(/O2 /Oi /Ot /GL)
+        add_link_options(/LTCG)
+        add_compile_definitions(NDEBUG)
+    else()
+        add_compile_options(-O3 -DNDEBUG)
+    endif()
+    message(STATUS "Release build - optimizations enabled")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(MSVC)
+        add_compile_options(/Od /Zi)
+    else()
+        add_compile_options(-O0 -g)
+    endif()
+    message(STATUS "Debug build - optimizations disabled")
+endif()
+
 ### BEGIN DEPS ###
 
 # OpenGL
@@ -22,7 +46,7 @@ add_library(glad STATIC vendor/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendor/glad/include)
 
 add_library(SOGLR STATIC src/dummy.cpp)
-target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm::glm assimp)
+target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm assimp)
 target_include_directories(SOGLR PUBLIC
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/vendor/glad/include

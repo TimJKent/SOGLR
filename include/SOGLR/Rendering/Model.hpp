@@ -45,42 +45,42 @@ namespace Rendering
         Mesh ProcessMesh(aiMesh *mesh, const aiScene *scene)
         {
             std::vector<Vertex> vertices;
+            vertices.reserve(mesh->mNumVertices);
             std::vector<unsigned int> indices;
+            indices.reserve(mesh->mNumFaces * 3);
             std::vector<Texture> textures;
 
             for (unsigned int i = 0; i < mesh->mNumVertices; i++)
             {
-                Vertex vertex;
-                // Position
-                glm::vec3 vector;
-                vector.x = mesh->mVertices[i].x;
-                vector.y = mesh->mVertices[i].y;
-                vector.z = mesh->mVertices[i].z;
-                vertex.position = vector;
+                float normal_x = 0.0f;
+                float normal_y = 0.0f;
+                float normal_z = 0.0f;
 
-                // Normals
                 if (mesh->HasNormals())
                 {
-                    vector.x = mesh->mNormals[i].x;
-                    vector.y = mesh->mNormals[i].y;
-                    vector.z = mesh->mNormals[i].z;
-                    vertex.normal = vector;
+                    normal_x = mesh->mNormals[i].x;
+                    normal_y = mesh->mNormals[i].y;
+                    normal_z = mesh->mNormals[i].z;
                 }
 
                 // Texture coordinates
-                if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
-                {
-                    glm::vec2 vec;
-                    vec.x = mesh->mTextureCoords[0][i].x;
-                    vec.y = mesh->mTextureCoords[0][i].y;
-                    vertex.texCoords = vec;
-                }
-                else
-                {
-                    vertex.texCoords = glm::vec2(0.0f, 0.0f);
-                }
+                // if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+                //{
+                //    glm::vec2 vec;
+                //    vec.x = mesh->mTextureCoords[0][i].x;
+                //    vec.y = mesh->mTextureCoords[0][i].y;
+                //    vertex.texCoords = vec;
+                //}
+                // else
+                //{
+                //    vertex.texCoords = glm::vec2(0.0f, 0.0f);
+                //}
 
-                vertices.push_back(vertex);
+                vertices.emplace_back(
+                    Vertex{
+                        mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z,
+                        normal_x, normal_y, normal_z,
+                        0.0f, 0.0f});
             }
             for (uint32_t i = 0; i < mesh->mNumFaces; i++)
             {
@@ -100,16 +100,17 @@ namespace Rendering
 
         void ProcessNode(aiNode *node, const aiScene *scene)
         {
+
+            // then do the same for each of its children
+            for (unsigned int i = 0; i < node->mNumChildren; i++)
+            {
+                ProcessNode(node->mChildren[i], scene);
+            }
             // process all the node's meshes (if any)
             for (unsigned int i = 0; i < node->mNumMeshes; i++)
             {
                 aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
                 meshes.push_back(ProcessMesh(mesh, scene));
-            }
-            // then do the same for each of its children
-            for (unsigned int i = 0; i < node->mNumChildren; i++)
-            {
-                ProcessNode(node->mChildren[i], scene);
             }
         }
 

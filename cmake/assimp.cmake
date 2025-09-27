@@ -10,5 +10,8 @@ set(ASSIMP_BUILD_FBX_IMPORTER ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_GLTF_IMPORTER ON CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_PLY_IMPORTER ON CACHE BOOL "" FORCE)
 
+# Ensure Assimp respects the build type for optimizations
+set(ASSIMP_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
 # Add assimp subdirectory (assimp is in SOGLR/assimp/)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/assimp ${CMAKE_CURRENT_BINARY_DIR}/assimp)
