@@ -6,7 +6,7 @@
 #include "Rendering/VertexBuffer.hpp"
 #include "Rendering/IndexBuffer.hpp"
 
-namespace Rendering
+namespace SOGLR
 {
     class VertexArrayObject
     {
@@ -21,23 +21,25 @@ namespace Rendering
             glDeleteVertexArrays(1, &renderer_id_);
         }
 
-        void AddVertexBuffer(const std::shared_ptr<VertexBuffer> &vb)
+        void AddVertexBuffer(const VertexBuffer &vb)
         {
+            vao_size = sizeof(glm::vec3) * 4 + sizeof(glm::vec2);
             glBindVertexArray(renderer_id_);
-            vb->Bind();
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+            vb.Bind();
+
+            AddAttribute(3);
+            AddAttribute(3);
+
+            AddAttribute(2);
+            AddAttribute(3);
+            AddAttribute(3);
         }
 
-        void SetIndexBuffer(const std::shared_ptr<IndexBuffer> &index_buffer)
+        void SetIndexBuffer(const IndexBuffer &index_buffer)
         {
             glBindVertexArray(renderer_id_);
-            index_buffer->Bind();
-            index_count_ = index_buffer->Count();
+            index_buffer.Bind();
+            index_count_ = index_buffer.Count();
             glBindVertexArray(0);
         }
 
@@ -57,8 +59,18 @@ namespace Rendering
         }
 
     private:
+        void AddAttribute(uint32_t attribute_size)
+        {
+            glEnableVertexAttribArray(attribute_count);
+            glVertexAttribPointer(attribute_count, attribute_size, GL_FLOAT, GL_FALSE, vao_size, (void *)attribute_size_offset);
+            attribute_size_offset += attribute_size * sizeof(float);
+            attribute_count++;
+        }
         uint32_t renderer_id_ = 0;
         uint32_t index_count_ = 0;
+        uint32_t attribute_count = 0;
+        uint32_t attribute_size_offset = 0;
+        uint32_t vao_size = 0;
     };
 
-} // namespace Rendering
+} // namespace SOGLR

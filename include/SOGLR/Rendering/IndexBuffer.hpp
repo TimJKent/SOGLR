@@ -4,7 +4,7 @@
 
 #include "glad/glad.h"
 
-namespace Rendering
+namespace SOGLR
 {
     class IndexBuffer
     {

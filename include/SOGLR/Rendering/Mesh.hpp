@@ -9,25 +9,18 @@
 #include "Rendering/IndexBuffer.hpp"
 #include "Rendering/VertexArrayObject.hpp"
 #include "Rendering/Vertex.hpp"
+#include "Rendering/Texture.hpp"
 
-namespace Rendering
+namespace SOGLR
 {
-
-    struct Texture
-    {
-        uint32_t id_;
-    };
-
     class Mesh
     {
     public:
-        Mesh()
+        Mesh() = delete;
+
+        Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices, const std::vector<std::shared_ptr<Texture>> &textures)
+            : textures_(textures), vertex_buffer_(vertices), index_buffer_(indices)
         {
-        }
-        Mesh(const std::vector<Vertex> &vertices, const std::vector<uint32_t> &indices, const std::vector<Texture> &textures)
-        {
-            vertex_buffer_ = std::make_shared<VertexBuffer>(vertices);
-            index_buffer_ = std::make_shared<IndexBuffer>(indices);
             vao_ = std::make_shared<VertexArrayObject>();
             vao_->AddVertexBuffer(vertex_buffer_);
             vao_->SetIndexBuffer(index_buffer_);
@@ -35,35 +28,25 @@ namespace Rendering
 
         void Draw(Shader &shader)
         {
-            unsigned int diffuseNr = 1;
-            unsigned int specularNr = 1;
-            // for (unsigned int i = 0; i < textures.size(); i++)
-            //{
-            //     glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-            //     // retrieve texture number (the N in diffuse_textureN)
-            //     string number;
-            //     string name = textures[i].type;
-            //     if (name == "texture_diffuse")
-            //         number = std::to_string(diffuseNr++);
-            //     else if (name == "texture_specular")
-            //         number = std::to_string(specularNr++);
-            //
-            //    shader.setInt(("material." + name + number).c_str(), i);
-            //    glBindTexture(GL_TEXTURE_2D, textures[i].id);
-            //}
-            // glActiveTexture(GL_TEXTURE0);
-
             // draw mesh
             vao_->Bind();
-            glDrawElements(GL_TRIANGLES, index_buffer_->Count(), GL_UNSIGNED_INT, 0);
+            shader.Bind();
+            shader.SetInt("diffusedTexture", 0);
+            shader.SetInt("normalTexture", 1);
+            for (auto &tex : textures_)
+            {
+                tex->Bind();
+            }
+            glDrawElements(GL_TRIANGLES, index_buffer_.Count(), GL_UNSIGNED_INT, 0);
             vao_->Unbind();
         }
 
         ~Mesh() = default;
 
     private:
-        std::shared_ptr<VertexBuffer> vertex_buffer_;
-        std::shared_ptr<IndexBuffer> index_buffer_;
+        VertexBuffer vertex_buffer_;
+        IndexBuffer index_buffer_;
+        std::vector<std::shared_ptr<Texture>> textures_;
         std::shared_ptr<VertexArrayObject> vao_;
     };
 };

@@ -45,7 +45,7 @@ include (cmake/assimp.cmake)
 add_library(glad STATIC vendor/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendor/glad/include)
 
-add_library(SOGLR STATIC src/dummy.cpp)
+add_library(SOGLR STATIC src/dummy.cpp src/stb_image.cpp)
 target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm assimp)
 target_include_directories(SOGLR PUBLIC
     ${PROJECT_SOURCE_DIR}/src/

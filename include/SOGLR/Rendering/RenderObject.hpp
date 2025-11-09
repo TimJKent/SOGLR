@@ -3,14 +3,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Rendering/Shader.hpp"
-#include "Rendering/VertexArrayObject.hpp"
-#include "Rendering/IndexBuffer.hpp"
-#include "Rendering/VertexBuffer.hpp"
+#include "Rendering/Model.hpp"
 
 #include <memory>
 #include <iostream>
 
-namespace Rendering
+namespace SOGLR
 {
     class RenderObject
     {
@@ -19,18 +17,10 @@ namespace Rendering
 
         void SetShader(const std::shared_ptr<Shader> &shader) { shader_ = shader; }
 
-        void SetModelData(const std::shared_ptr<IndexBuffer> &ibo, const std::shared_ptr<VertexBuffer> &vbo)
+        void SetModel(const std::shared_ptr<Model> &model)
         {
-            index_count_ = ibo->Count();
-            vao_.AddVertexBuffer(vbo);
-            vao_.SetIndexBuffer(ibo);
+            model_ = model;
         }
-
-        void SetPosition(const glm::vec3 &position) { position_ = position; }
-        void SetRotation(const glm::vec3 &rotation) { rotation_ = rotation; }
-        void SetScale(const glm::vec3 &scale) { scale_ = scale; }
-
-        glm::vec3 GetPosition() const { return position_; }
 
         void Bind() const
         {
@@ -38,30 +28,32 @@ namespace Rendering
             {
                 shader_->Bind();
                 glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, position_);
-                model = glm::rotate(model, glm::radians(rotation_.x), glm::vec3(1, 0, 0));
-                model = glm::rotate(model, glm::radians(rotation_.y), glm::vec3(0, 1, 0));
-                model = glm::rotate(model, glm::radians(rotation_.z), glm::vec3(0, 0, 1));
-                model = glm::scale(model, scale_);
+                model = glm::translate(model, transform_.position);
+                model = glm::rotate(model, glm::radians(transform_.rotation.x), glm::vec3(1, 0, 0));
+                model = glm::rotate(model, glm::radians(transform_.rotation.y), glm::vec3(0, 1, 0));
+                model = glm::rotate(model, glm::radians(transform_.rotation.z), glm::vec3(0, 0, 1));
+                model = glm::scale(model, transform_.scale);
                 shader_->SetUniformMat4f("uModel", model);
             }
             else
             {
                 std::cout << "Shader not bound for RenderObject!" << std::endl;
             }
-            vao_.Bind();
+        }
+
+        void Draw()
+        {
+            Bind();
+            model_->Draw(shader_);
         }
 
         std::shared_ptr<Shader> GetShader() { return shader_; }
 
-        uint32_t IndexCount() const { return index_count_; }
+        Transform &GetTransform() { return transform_; }
 
     private:
         std::shared_ptr<Shader> shader_;
-        Rendering::VertexArrayObject vao_;
-        uint32_t index_count_ = 0;
-        glm::vec3 position_ = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 rotation_ = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 scale_ = glm::vec3(1.0f, 1.0f, 1.0f);
+        std::shared_ptr<Model> model_;
+        Transform transform_;
     };
 }

@@ -6,17 +6,17 @@
 
 #include "Rendering/Vertex.hpp"
 
-namespace Rendering
+namespace SOGLR
 {
     class VertexBuffer
     {
     public:
-        VertexBuffer(const std::vector<Rendering::Vertex> &verts)
+        VertexBuffer(const std::vector<Vertex> &verts)
             : count_(static_cast<uint32_t>(verts.size()))
         {
             glGenBuffers(1, &render_id_);
             glBindBuffer(GL_ARRAY_BUFFER, render_id_);
-            glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(Rendering::Vertex), verts.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(Vertex), verts.data(), GL_STATIC_DRAW);
         }
 
         ~VertexBuffer()
