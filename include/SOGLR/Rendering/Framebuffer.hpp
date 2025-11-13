@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-#include "Rendering/Texture.hpp"
+#include "Texture.hpp"
 
 namespace SOGLR
 {

@@ -19,7 +19,7 @@ namespace SOGLR
             std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
         }
 
-        Window::Window(int width = 600, int height = 400, const char *title = "SOGLR")
+        Window(int width = 600, int height = 400, const char *title = "SOGLR")
         {
             glfwSetErrorCallback(ErrorCallback);
             if (!glfwInit())
@@ -50,7 +50,7 @@ namespace SOGLR
             }
         }
 
-        Window::~Window()
+        ~Window()
         {
             Destroy();
         }
@@ -64,7 +64,7 @@ namespace SOGLR
             }
         }
 
-        void Window::BeginFrame()
+        void BeginFrame()
         {
             Vector2Int window_size = GetSize();
             glViewport(0, 0, static_cast<GLsizei>(window_size.x), static_cast<GLsizei>(window_size.y));
@@ -72,20 +72,20 @@ namespace SOGLR
             glClearColor(0.44f, 0.74f, 0.88f, 1.0f);
         }
 
-        void Window::EndFrame()
+        void EndFrame()
         {
             glfwSwapBuffers(window_);
             glfwPollEvents();
         }
 
-        Vector2Int Window::GetSize() const
+        Vector2Int GetSize() const
         {
             Vector2Int size;
             glfwGetWindowSize(window_, (int *)&size.x, (int *)&size.y);
             return size;
         }
 
-        float Window::GetAspectRatio() const
+        float GetAspectRatio() const
         {
             int width;
             int height;
@@ -93,7 +93,7 @@ namespace SOGLR
             return static_cast<float>(width) / static_cast<float>(height);
         }
 
-        bool Window::ShouldClose() const
+        bool ShouldClose() const
         {
             return glfwWindowShouldClose(window_);
         }

@@ -46,10 +46,34 @@ add_library(glad STATIC vendor/glad/src/glad.c)
 target_include_directories(glad PUBLIC vendor/glad/include)
 
 add_library(SOGLR STATIC src/dummy.cpp src/stb_image.cpp)
-target_link_libraries(SOGLR PUBLIC glfw opengl32 glad glm assimp)
+
+if(WIN32)
+    set(SYSTEM_LIBRARIES
+        opengl32
+    )
+elseif(UNIX)
+    set(SYSTEM_LIBRARIES
+        GL
+        pthread
+    )
+endif()
+
+target_link_libraries(SOGLR PUBLIC
+    ${SYSTEM_LIBRARIES}
+    glfw
+    glad
+    glm
+    assimp
+)
+
+
+
+
+
 target_include_directories(SOGLR PUBLIC
     ${PROJECT_SOURCE_DIR}/src/
     ${PROJECT_SOURCE_DIR}/vendor/glad/include
+    ${PROJECT_SOURCE_DIR}/include/SOGLR
     ${PROJECT_SOURCE_DIR}/
     ${PROJECT_SOURCE_DIR}/build/_deps/glm-src/glm
 )

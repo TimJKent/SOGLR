@@ -6,15 +6,15 @@
 #include <chrono>
 #include <memory>
 
-#include "Rendering/VertexBuffer.hpp"
-#include "Rendering/IndexBuffer.hpp"
-#include "Rendering/VertexArrayObject.hpp"
-#include "Rendering/Framebuffer.hpp"
-#include "Rendering/Advanced/Shadowmap.hpp"
-#include "Rendering/RenderObject.hpp"
-#include "Rendering/Scene.hpp"
-#include "Rendering/Window.hpp"
-#include "Rendering/Primitives.hpp"
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
+#include "VertexArrayObject.hpp"
+#include "Framebuffer.hpp"
+#include "Advanced/Shadowmap.hpp"
+#include "RenderObject.hpp"
+#include "Scene.hpp"
+#include "Window.hpp"
+#include "Primitives.hpp"
 
 namespace SOGLR
 {
