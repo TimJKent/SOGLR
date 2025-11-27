@@ -17,6 +17,8 @@ namespace SOGLR
     class Model
     {
     public:
+        Model() = default;
+
         Model(const std::string &file_path)
             : file_path_(file_path), file_directory_(file_path.substr(0, file_path.find_last_of('\\')))
         {
