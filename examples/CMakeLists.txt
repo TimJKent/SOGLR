@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(.. SOGLR)
 include_directories(../include)
-add_executable(SOGLR_Examples 6_Scenes.cpp)
+add_executable(SOGLR_Examples 7_RenderText.cpp)
 
 target_link_libraries(SOGLR_Examples PRIVATE 
     SOGLR

@@ -28,13 +28,9 @@ public:
        FT_Face face;
        if (FT_New_Face(ft, fontPath.c_str(), 0, &face))
        {
-           return std::unexpected("ERROR::FREETYPE: Failed to load font");
+           return std::unexpected("ERROR::FREETYPE: Failed to load font:" + fontPath);
        }
        FT_Set_Pixel_Sizes(face, 0, 48);  
-       if (FT_Load_Char(face, 'X', FT_LOAD_RENDER))
-       {
-           return std::unexpected("ERROR::FREETYTPE: Failed to load Glyph");
-       }
        
        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
