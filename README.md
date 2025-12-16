@@ -19,3 +19,7 @@ cmake -S . -B build
 cmake --build build
 ./build/SOGLR_Examples
 ```
+
+## Known Issues
+
+- Examples 2_DrawingATriangle.cpp and 3_RainbowTriangle compile and run, but no triangle is visible
