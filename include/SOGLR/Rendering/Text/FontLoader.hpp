@@ -16,7 +16,7 @@ public:
    FontLoader() {}
    ~FontLoader(){}
 
-   std::expected<std::shared_ptr<Font>, std::string> LoadFont(const std::string& fontPath)
+   std::expected<std::shared_ptr<Font>, std::string> LoadFont(const std::string& font_path, int font_size = 48)
    {
        std::shared_ptr<Font> font = std::make_shared<Font>();
        FT_Library ft;
@@ -26,11 +26,11 @@ public:
        }
 
        FT_Face face;
-       if (FT_New_Face(ft, fontPath.c_str(), 0, &face))
+       if (FT_New_Face(ft, font_path.c_str(), 0, &face))
        {
-           return std::unexpected("ERROR::FREETYPE: Failed to load font:" + fontPath);
+           return std::unexpected("ERROR::FREETYPE: Failed to load font:" + font_path);
        }
-       FT_Set_Pixel_Sizes(face, 0, 48);  
+       FT_Set_Pixel_Sizes(face, 0, font_size);  
        
        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 

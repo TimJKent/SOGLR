@@ -31,8 +31,10 @@ uniform mat4 uModel;
 
 void main()
 {
-    gl_Position = projection * view * uModel * vec4(aPos, 1.0);
-    FragPos = vec3(uModel * vec4(aPos, 1.0));
+    gl_Position = uModel * vec4(aPos, 1.0);
+    gl_Position.x -= 1.0;
+    gl_Position.y -= 1.0;
+    FragPos = gl_Position.xyz;
     FragPosLightSpace = lightSpaceMatrix * uModel * vec4(FragPos, 1.0);
     // Properly transform normals for non-uniform scaling
     mat3 normalMatrix = mat3(transpose(inverse(uModel)));

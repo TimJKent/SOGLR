@@ -30,7 +30,7 @@ namespace SOGLR::Text
                 text_ = new_text;
                 float x = 0.0f;
                 float y = 0.0f;
-                float scale = 0.01f;
+                float scale = 0.002f;
                 auto quad_model = std::make_shared<SOGLR::Model>();
 
                 for(char c : text_)

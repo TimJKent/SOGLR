@@ -38,24 +38,29 @@ namespace SOGLR
                 return;
             }
 
-            if (!directional_light_)
-            {
-                std::cerr << "No Directional Light!" << std::endl;
-                return;
-            }
-
             for (auto &obj : render_list_)
             {
                 auto shader = obj->GetShader();
                 shader->Bind();
                 shader->SetInt("diffusedTexture", 0);
                 shader->SetInt("normalTexture", 1);
+
                 if (shadow_map)
                 {
                     shader->SetInt("shadowMap", 5);
                     shader->SetUniformMat4f("lightSpaceMatrix", shadow_map->GetLightSpaceMatrix());
                 }
-                shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, directional_light_->direction, directional_light_->color, directional_light_->intensity);
+
+                
+                if (directional_light_)
+                {
+                    shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, directional_light_->direction, directional_light_->color, directional_light_->intensity);
+                }
+                else
+                {
+                    shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f}, 0.0f);
+                }
+
                 obj->Draw();
             }
         }

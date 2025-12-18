@@ -140,6 +140,12 @@ namespace SOGLR
             glUniform3f(location, vector.x, vector.y, vector.z);
         }
 
+        void SetUniform2f(const char *name, const glm::vec2 &value)
+        {
+            GLint location = glGetUniformLocation(renderer_id_, name);
+            glUniform2f(location, value.x, value.y);
+        }
+
         void SetUniform1f(const char *name, float value)
         {
             GLint location = glGetUniformLocation(renderer_id_, name);
