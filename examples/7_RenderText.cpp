@@ -17,7 +17,7 @@ int main()
     std::shared_ptr<SOGLR::Shader> text_shader = std::make_shared<SOGLR::Shader>(vert_file, frag_file);
     
     SOGLR::Text::FontLoader font_loader;
-    auto font = font_loader.LoadFont(font_file, 48);
+    auto font = font_loader.LoadFont(font_file, 24);
     if (!font)
     {
         std::cerr << "Failed to load font: " << font.error() << std::endl;
@@ -30,13 +30,17 @@ int main()
     scene.SetSceneCamera(camera_controller.GetCamera());
     
     SOGLR::Text::TextRenderer text_renderer(text_shader, font.value(), scene);
+    SOGLR::Text::TextRenderer text_renderer2(text_shader, font.value(), scene);
+    text_renderer.GetTextObject()->GetTransform().position = glm::vec3(0.0f, 24.0f, 0.0f);
     text_renderer.SetText("Hello, SOGLR!");
+    text_renderer2.SetText("Hello, SOGLR!");
 
     while (renderer.IsRunning())
     {
         renderer.BeginFrame();
-        scene.DrawScene();
+        scene.DrawScene(nullptr, renderer.GetWindow()->GetSize());
         text_renderer.SetText("FPS: " + std::to_string(static_cast<int>(1.0f / renderer.GetDeltaTime())));
+        text_renderer2.SetText("MS: " + std::to_string(renderer.GetDeltaTime() * 1000.0f));
         renderer.EndFrame();
     }
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Math/Vector.h"
-
 #include "Rendering/Camera.hpp"
 #include "Rendering/IndexBuffer.hpp"
 #include "Rendering/Framebuffer.hpp"

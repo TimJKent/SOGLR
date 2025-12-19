@@ -19,8 +19,6 @@ namespace SOGLR::Text
             , font_(font)
             , text_obj_(std::make_shared<SOGLR::RenderObject>())
             {
-                
-                
                 // Add to scene so it gets rendered with proper matrix setup
                 scene.AddRenderObject(text_obj_);
             }
@@ -30,7 +28,7 @@ namespace SOGLR::Text
                 text_ = new_text;
                 float x = 0.0f;
                 float y = 0.0f;
-                float scale = 0.002f;
+                float scale = 1.0f;
                 auto quad_model = std::make_shared<SOGLR::Model>();
 
                 for(char c : text_)
@@ -49,6 +47,7 @@ namespace SOGLR::Text
                         { xpos + w, ypos,     0.0f, 0.0f,0.0f,1.0f, 1.0f, 0.0f,  1.0f,0.0f,0.0f, 0.0f,1.0f,0.0f }, // bottom-right         
                         { xpos,     ypos,     0.0f, 0.0f,0.0f,1.0f, 0.0f, 0.0f,  1.0f,0.0f,0.0f, 0.0f,1.0f,0.0f }, // bottom-left            
                     };
+                    
                     SOGLR::Mesh quad_mesh
                     {
                         vertices,

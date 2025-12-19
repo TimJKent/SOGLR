@@ -30,7 +30,7 @@ namespace SOGLR
             render_list_.push_back(render_object);
         }
 
-        void DrawScene(std::shared_ptr<Advanced::Shadowmap> shadow_map = nullptr)
+        void DrawScene(std::shared_ptr<Advanced::Shadowmap> shadow_map = nullptr, glm::ivec2 viewport_size = glm::vec2(0.0f))
         {
             if (!scene_camera_)
             {
@@ -44,6 +44,7 @@ namespace SOGLR
                 shader->Bind();
                 shader->SetInt("diffusedTexture", 0);
                 shader->SetInt("normalTexture", 1);
+                shader->SetUniformMat4f("uOrthoProjection", glm::ortho(0.0f, static_cast<float>(viewport_size.x), 0.0f, static_cast<float>(viewport_size.y), -1.0f, 100.0f));
 
                 if (shadow_map)
                 {
