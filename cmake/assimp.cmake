@@ -15,3 +15,8 @@ set(ASSIMP_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 # Add assimp subdirectory (assimp is in SOGLR/assimp/)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/assimp ${CMAKE_CURRENT_BINARY_DIR}/assimp)
+
+# Suppress unreferenced formal parameter warnings for assimp (third-party library)
+if(MSVC)
+    target_compile_options(assimp PRIVATE /wd4100)
+endif()

@@ -22,7 +22,7 @@ int main()
     std::shared_ptr<SOGLR::Shader> depth_shader = std::make_shared<SOGLR::Shader>(source_dir + "/shaders/depth.vert", source_dir + "/shaders/depth.frag");
 
     // Add Render Object to Scene
-    std::shared_ptr<SOGLR::Model> sponza_mesh = std::make_shared<SOGLR::Model>(source_dir + "\\assets\\models\\sponza\\sponza.obj");
+    std::shared_ptr<SOGLR::Model> sponza_mesh = std::make_shared<SOGLR::Model>(source_dir + "/assets/models/sponza/sponza.obj");
     std::shared_ptr<SOGLR::RenderObject> obj1 = std::make_shared<SOGLR::RenderObject>();
     obj1->SetModel(sponza_mesh);
     obj1->SetShader(lit_shader);

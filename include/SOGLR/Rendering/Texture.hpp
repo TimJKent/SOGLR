@@ -18,7 +18,8 @@ namespace SOGLR
             SPECULAR,
             HEIGHT,
             DEPTH,
-            STENCIL
+            STENCIL,
+            TEXT
         };
 
         constexpr static uint32_t TextureTypeToGLInternalFormat(const TEXTURE_TYPE texture_type)
@@ -31,6 +32,8 @@ namespace SOGLR
                 return GL_DEPTH_STENCIL;
             case DIFFUSE_RGBA:
                 return GL_RGBA;
+            case TEXT:
+                return GL_RED;
             default:
                 return GL_RGB;
             }
@@ -58,13 +61,13 @@ namespace SOGLR
             }
         }
 
-        Texture(const uint32_t width, const uint32_t height, const TEXTURE_TYPE texture_type)
+        Texture(const uint32_t width, const uint32_t height, const TEXTURE_TYPE texture_type, unsigned char* data = nullptr)
             : texture_type_(texture_type)
         {
             glGenTextures(1, &renderer_id_);
             glBindTexture(GL_TEXTURE_2D, renderer_id_);
             uint32_t format = TextureTypeToGLInternalFormat(texture_type);
-            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

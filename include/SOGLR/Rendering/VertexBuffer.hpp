@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <vector>
-#include "Math/Vector.h"
 #include <glad/glad.h>
 
 #include "Rendering/Vertex.hpp"

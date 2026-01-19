@@ -30,17 +30,11 @@ namespace SOGLR
             render_list_.push_back(render_object);
         }
 
-        void DrawScene(std::shared_ptr<Advanced::Shadowmap> shadow_map = nullptr)
+        void DrawScene(std::shared_ptr<Advanced::Shadowmap> shadow_map = nullptr, glm::ivec2 viewport_size = glm::vec2(0.0f))
         {
             if (!scene_camera_)
             {
                 std::cerr << "No Scene Camera!" << std::endl;
-                return;
-            }
-
-            if (!directional_light_)
-            {
-                std::cerr << "No Directional Light!" << std::endl;
                 return;
             }
 
@@ -50,12 +44,24 @@ namespace SOGLR
                 shader->Bind();
                 shader->SetInt("diffusedTexture", 0);
                 shader->SetInt("normalTexture", 1);
+                shader->SetUniformMat4f("uOrthoProjection", glm::ortho(0.0f, static_cast<float>(viewport_size.x), 0.0f, static_cast<float>(viewport_size.y), -1.0f, 100.0f));
+
                 if (shadow_map)
                 {
                     shader->SetInt("shadowMap", 5);
                     shader->SetUniformMat4f("lightSpaceMatrix", shadow_map->GetLightSpaceMatrix());
                 }
-                shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, directional_light_->direction, directional_light_->color, directional_light_->intensity);
+
+                
+                if (directional_light_)
+                {
+                    shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, directional_light_->direction, directional_light_->color, directional_light_->intensity);
+                }
+                else
+                {
+                    shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f}, 0.0f);
+                }
+
                 obj->Draw();
             }
         }

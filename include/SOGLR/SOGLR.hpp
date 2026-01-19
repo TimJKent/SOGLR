@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Math/Vector.h"
-
 #include "Rendering/Camera.hpp"
 #include "Rendering/IndexBuffer.hpp"
 #include "Rendering/Framebuffer.hpp"
@@ -18,3 +16,5 @@
 #include "Rendering/VertexArrayObject.hpp"
 #include "Rendering/VertexBuffer.hpp"
 #include "Rendering/Window.hpp"
+#include "Rendering/Text/FontLoader.hpp"
+#include "Rendering/Text/TextRenderer.hpp"

@@ -20,7 +20,7 @@ namespace SOGLR
         Model() = default;
 
         Model(const std::string &file_path)
-            : file_path_(file_path), file_directory_(file_path.substr(0, file_path.find_last_of('\\')))
+            : file_path_(file_path), file_directory_(file_path.substr(0, file_path.find_last_of('/')))
         {
 
 #ifdef PROFILE
@@ -136,7 +136,7 @@ namespace SOGLR
                 aiString str;
                 mat->GetTexture(ai_type, i, &str);
                 std::string file_path = file_directory_;
-                file_path += "\\" + std::string(str.C_Str());
+                file_path += "/" + std::string(str.C_Str());
                 textures.emplace_back(std::make_shared<Texture>(file_path.c_str(), type));
             }
             return textures;

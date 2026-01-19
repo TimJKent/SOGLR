@@ -120,7 +120,7 @@ namespace SOGLR
             depth_shader->Unbind();
             shadow_map->Unbind();
             glCullFace(GL_BACK);
-            Vector2Int size = window_->GetSize();
+            glm::ivec2 size = window_->GetSize();
             framebuffer->Invalidate(size.x, size.y);
             framebuffer->Bind();
             scene.DrawScene(shadow_map);

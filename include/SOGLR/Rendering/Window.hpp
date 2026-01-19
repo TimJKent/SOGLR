@@ -2,7 +2,6 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "Math/Vector.h"
 #include <iostream>
 
 namespace SOGLR
@@ -66,7 +65,7 @@ namespace SOGLR
 
         void BeginFrame()
         {
-            Vector2Int window_size = GetSize();
+            glm::ivec2 window_size = GetSize();
             glViewport(0, 0, static_cast<GLsizei>(window_size.x), static_cast<GLsizei>(window_size.y));
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(0.44f, 0.74f, 0.88f, 1.0f);
@@ -78,9 +77,9 @@ namespace SOGLR
             glfwPollEvents();
         }
 
-        Vector2Int GetSize() const
+        glm::ivec2 GetSize() const
         {
-            Vector2Int size;
+            glm::ivec2 size;
             glfwGetWindowSize(window_, (int *)&size.x, (int *)&size.y);
             return size;
         }
