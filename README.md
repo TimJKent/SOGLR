@@ -7,7 +7,7 @@ cmake --build build
 
 # Build Examples
 
-You will need to change this line to the name of an example.cpp
+You will need to change this line in **examples/CMakeLists.txt** to the name of an example.cpp
 
 ```
 add_executable(SOGLR_Examples [example-name.cpp])
