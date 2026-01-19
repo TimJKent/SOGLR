@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.11)
 project(SOGLR)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Enable C++23 features for MSVC
+if(MSVC)
+    add_compile_options(/std:c++latest)
+endif()
 
 # Set default build type to Release if not specified
 if(NOT CMAKE_BUILD_TYPE)
@@ -11,7 +17,7 @@ endif()
 # Global optimization settings that will affect all targets including Assimp
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     if(MSVC)
-        add_compile_options(/O2 /Oi /Ot /GL)
+        add_compile_options( /Oi /Ot /GL)
         add_link_options(/LTCG)
         add_compile_definitions(NDEBUG)
     else()
