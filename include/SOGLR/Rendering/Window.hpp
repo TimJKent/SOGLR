@@ -138,6 +138,11 @@ namespace SOGLR
             glfwSetWindowTitle(window_, title.c_str());
         }
 
+        void SetSize(uint32_t width, uint32_t height)
+        {
+            glfwSetWindowSize(window_, width, height);
+        }
+
     private:
         GLFWwindow *window_;
         bool is_valid_ = false;
