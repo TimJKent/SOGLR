@@ -84,6 +84,15 @@ namespace SOGLR
             return size;
         }
 
+        glm::ivec2 GetMousePosition() const
+        {
+            glm::ivec2 size;
+            glfwGetWindowSize(window_, (int *)&size.x, (int *)&size.y);
+            double xpos, ypos;
+            glfwGetCursorPos(window_, &xpos, &ypos);
+            return glm::ivec2(static_cast<int>(xpos), size.y - static_cast<int>(ypos));
+        }
+
         float GetAspectRatio() const
         {
             int width;
@@ -97,9 +106,24 @@ namespace SOGLR
             return glfwWindowShouldClose(window_);
         }
 
+        void RequestWindowClose()
+        {
+            glfwSetWindowShouldClose(window_, GLFW_TRUE);
+        }
+
         bool IsKeyDown(int key) const
         {
             return glfwGetKey(window_, key) == GLFW_PRESS;
+        }
+
+        bool IsMouseButtonDown(int button) const
+        {
+            return glfwGetMouseButton(window_, button) == GLFW_PRESS;
+        }
+
+        bool IsMouseButtonUp(int button) const
+        {
+            return glfwGetMouseButton(window_, button) == GLFW_RELEASE;
         }
 
         bool IsValid() const { return is_valid_; }

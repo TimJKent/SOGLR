@@ -103,6 +103,11 @@ namespace SOGLR
             return !window_->ShouldClose();
         }
 
+        void Stop()
+        {
+            window_->RequestWindowClose();
+        }
+
         std::shared_ptr<Window> &GetWindow()
         {
             return window_;
@@ -110,18 +115,21 @@ namespace SOGLR
 
         void DrawSceneToFramebuffer(Scene &scene, std::shared_ptr<Framebuffer> framebuffer, std::shared_ptr<Advanced::Shadowmap> shadow_map, std::shared_ptr<Shader> depth_shader)
         {
-            glEnable(GL_DEPTH_TEST);
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_FRONT);
-            depth_shader->Bind();
-            depth_shader->SetUniformMat4f("lightSpaceMatrix", shadow_map->GetLightSpaceMatrix());
-            shadow_map->Bind();
-            scene.DrawSceneFixedShader(depth_shader);
-            depth_shader->Unbind();
-            shadow_map->Unbind();
-            glCullFace(GL_BACK);
-            glm::ivec2 size = window_->GetSize();
-            framebuffer->Invalidate(size.x, size.y);
+            if(shadow_map && depth_shader)
+            {
+                glEnable(GL_DEPTH_TEST);
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT);
+                depth_shader->Bind();
+                depth_shader->SetUniformMat4f("lightSpaceMatrix", shadow_map->GetLightSpaceMatrix());
+                shadow_map->Bind();
+                scene.DrawSceneFixedShader(depth_shader);
+                depth_shader->Unbind();
+                shadow_map->Unbind();
+                glCullFace(GL_BACK);
+                glm::ivec2 size = window_->GetSize();
+                framebuffer->Invalidate(size.x, size.y);
+            }
             framebuffer->Bind();
             scene.DrawScene(shadow_map);
             framebuffer->Unbind();

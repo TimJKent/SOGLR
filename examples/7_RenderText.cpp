@@ -30,10 +30,7 @@ int main()
     scene.SetSceneCamera(camera_controller.GetCamera());
     
     SOGLR::Text::TextRenderer text_renderer(text_shader, font.value(), scene);
-    SOGLR::Text::TextRenderer text_renderer2(text_shader, font.value(), scene);
-    text_renderer.GetTextObject()->GetTransform().position = glm::vec3(0.0f, 24.0f, 0.0f);
     text_renderer.SetText("Hello, SOGLR!");
-    text_renderer2.SetText("Hello, SOGLR!");
 
     while (renderer.IsRunning())
     {

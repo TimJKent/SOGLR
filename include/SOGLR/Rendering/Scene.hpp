@@ -30,6 +30,14 @@ namespace SOGLR
             render_list_.push_back(render_object);
         }
 
+        void AddRenderObject(std::vector<std::shared_ptr<RenderObject>> render_object)
+        {
+            for (auto& render_object : render_object)
+            {
+                render_list_.push_back(render_object);
+            }
+        }
+
         void DrawScene(std::shared_ptr<Advanced::Shadowmap> shadow_map = nullptr, glm::ivec2 viewport_size = glm::vec2(0.0f))
         {
             if (!scene_camera_)

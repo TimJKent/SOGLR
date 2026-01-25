@@ -18,7 +18,7 @@ public:
 
    std::expected<std::shared_ptr<Font>, std::string> LoadFont(const std::string& font_path, int font_size = 48)
    {
-       std::shared_ptr<Font> font = std::make_shared<Font>();
+       std::shared_ptr<Font> font = std::make_shared<Font>(font_size);
        FT_Library ft;
        if (FT_Init_FreeType(&ft))
        {
