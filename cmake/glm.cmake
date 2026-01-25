@@ -8,8 +8,15 @@ FetchContent_Declare(
 	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
 )
 
-FetchContent_Populate(glm)
+FetchContent_GetProperties(glm)
+if(NOT glm_POPULATED)
+	FetchContent_Populate(glm)
+endif()
+
+message(STATUS "GLM source directory: ${glm_SOURCE_DIR}")
 
 # Create interface library for GLM (header-only)
-add_library(glm INTERFACE)
-target_include_directories(glm INTERFACE ${glm_SOURCE_DIR})
+if(NOT TARGET glm)
+	add_library(glm INTERFACE)
+	target_include_directories(glm INTERFACE ${glm_SOURCE_DIR})
+endif()

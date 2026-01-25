@@ -81,5 +81,5 @@ target_include_directories(SOGLR PUBLIC
     ${PROJECT_SOURCE_DIR}/include/SOGLR
     ${PROJECT_SOURCE_DIR}/
     ${PROJECT_SOURCE_DIR}/freetype/include
-    ${PROJECT_SOURCE_DIR}/build/_deps/glm-src/glm
+    ${glm_SOURCE_DIR}
 )
