@@ -6,6 +6,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Rendering/RenderObject.hpp"
 #include "Rendering/Lighting/DirectionalLight.hpp"
+#include "Rendering/Material.hpp"
 #include "Rendering/Mesh.hpp"
 #include "Rendering/Model.hpp"
 #include "Rendering/Primitives.hpp"

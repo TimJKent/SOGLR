@@ -9,6 +9,7 @@
 #include "Rendering/Shader.hpp"
 #include "Rendering/Lighting/DirectionalLight.hpp"
 #include "Rendering/Advanced/Shadowmap.hpp"
+#include "Rendering/Material.hpp"
 
 namespace SOGLR
 {
@@ -32,7 +33,7 @@ namespace SOGLR
 
         void AddRenderObject(std::vector<std::shared_ptr<RenderObject>> render_object)
         {
-            for (auto& render_object : render_object)
+            for (auto &render_object : render_object)
             {
                 render_list_.push_back(render_object);
             }
@@ -54,20 +55,54 @@ namespace SOGLR
                 shader->SetInt("normalTexture", 1);
                 shader->SetUniformMat4f("uOrthoProjection", glm::ortho(0.0f, static_cast<float>(viewport_size.x), 0.0f, static_cast<float>(viewport_size.y), -1.0f, 100.0f));
 
+                std::shared_ptr<Material> material = obj->GetMaterial();
+                if (material)
+                {
+                    for (const auto &prop : material->GetProperties())
+                    {
+                        const std::string &name = prop.first;
+                        const auto &value = prop.second;
+
+                        if (std::holds_alternative<int>(value))
+                        {
+                            shader->SetInt(name, std::get<int>(value));
+                        }
+                        else if (std::holds_alternative<float>(value))
+                        {
+                            shader->SetUniform1f(name.c_str(), std::get<float>(value));
+                        }
+                        else if (std::holds_alternative<glm::vec2>(value))
+                        {
+                            shader->SetUniform2f(name.c_str(), std::get<glm::vec2>(value));
+                        }
+                        else if (std::holds_alternative<glm::vec3>(value))
+                        {
+                            shader->SetUniform3f(name.c_str(), std::get<glm::vec3>(value));
+                        }
+                        else if (std::holds_alternative<glm::vec4>(value))
+                        {
+                            shader->SetUniform4f(name.c_str(), std::get<glm::vec4>(value));
+                        }
+                        else if (std::holds_alternative<glm::mat4>(value))
+                        {
+                            shader->SetUniformMat4f(name.c_str(), std::get<glm::mat4>(value));
+                        }
+                    }
+                }
+
                 if (shadow_map)
                 {
                     shader->SetInt("shadowMap", 5);
                     shader->SetUniformMat4f("lightSpaceMatrix", shadow_map->GetLightSpaceMatrix());
                 }
 
-                
                 if (directional_light_)
                 {
                     shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, directional_light_->direction, directional_light_->color, directional_light_->intensity);
                 }
                 else
                 {
-                    shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, {0.0f,0.0f,0.0f}, {0.0f,0.0f,0.0f}, 0.0f);
+                    shader->SetUBOMatrices(scene_camera_->GetProjectionMatrix(), scene_camera_->GetViewMatrix(), scene_camera_->GetTransform().position, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, 0.0f);
                 }
 
                 obj->Draw();

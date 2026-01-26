@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Rendering/Shader.hpp"
 #include "Rendering/Model.hpp"
+#include "Rendering/Material.hpp"
 
 #include <memory>
 #include <iostream>
@@ -20,6 +21,11 @@ namespace SOGLR
         void SetModel(const std::shared_ptr<Model> &model)
         {
             model_ = model;
+        }
+
+        void SetMaterial(const std::shared_ptr<Material> &material)
+        {
+            material_ = std::make_shared<Material>(*material);
         }
 
         void Bind() const
@@ -48,12 +54,14 @@ namespace SOGLR
         }
 
         std::shared_ptr<Shader> GetShader() { return shader_; }
+        std::shared_ptr<Material> GetMaterial() { return material_; }
 
         Transform &GetTransform() { return transform_; }
 
     private:
         std::shared_ptr<Shader> shader_;
         std::shared_ptr<Model> model_;
+        std::shared_ptr<Material> material_;
         Transform transform_;
     };
 }
