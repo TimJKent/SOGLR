@@ -68,7 +68,7 @@ namespace SOGLR
             glm::ivec2 window_size = GetSize();
             glViewport(0, 0, static_cast<GLsizei>(window_size.x), static_cast<GLsizei>(window_size.y));
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glClearColor(0.44f, 0.74f, 0.88f, 1.0f);
+            glClearColor(clear_color_.r, clear_color_.g, clear_color_.b, clear_color_.a);
         }
 
         void EndFrame()
@@ -143,8 +143,14 @@ namespace SOGLR
             glfwSetWindowSize(window_, width, height);
         }
 
+        void SetClearColor(const glm::vec4 &color)
+        {
+            clear_color_ = color;
+        }
+
     private:
         GLFWwindow *window_;
         bool is_valid_ = false;
+        glm::vec4 clear_color_ = {0.44f, 0.74f, 0.88f, 1.0f};
     };
 }

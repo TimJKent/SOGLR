@@ -16,5 +16,3 @@
 #include "Rendering/VertexArrayObject.hpp"
 #include "Rendering/VertexBuffer.hpp"
 #include "Rendering/Window.hpp"
-#include "Rendering/Text/FontLoader.hpp"
-#include "Rendering/Text/TextRenderer.hpp"
