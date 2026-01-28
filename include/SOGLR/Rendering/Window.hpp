@@ -3,14 +3,39 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <functional>
+#include <unordered_map>
+#include <vector>
+#include <array>
 
 namespace SOGLR
 {
     class Window
     {
     public:
+        enum class KeyAction
+        {
+            Unknown = -1,
+            Release = GLFW_RELEASE,
+            Press = GLFW_PRESS,
+            Repeat = GLFW_REPEAT
+        };
+
         static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
         {
+            Window *win = static_cast<Window *>(glfwGetWindowUserPointer(window));
+            if (win)
+            {
+                win->key_states_[key] = static_cast<KeyAction>(action);
+                if (win)
+                {
+                    if (win->key_callbacks_.count(key) == 0)
+                        return;
+
+                    for (auto &callback : win->key_callbacks_[key])
+                        callback(static_cast<KeyAction>(action));
+                }
+            }
         }
 
         static void ErrorCallback(int error, const char *description)
@@ -33,6 +58,7 @@ namespace SOGLR
             is_valid_ = (window_ != nullptr);
             if (is_valid_)
             {
+                glfwSetWindowUserPointer(window_, this);
                 glfwSetKeyCallback(window_, KeyCallback);
                 glfwMakeContextCurrent(window_);
 
@@ -113,7 +139,17 @@ namespace SOGLR
 
         bool IsKeyDown(int key) const
         {
-            return glfwGetKey(window_, key) == GLFW_PRESS;
+            return key_states_[key] == KeyAction::Press;
+        }
+
+        bool IsKeyHeld(int key) const
+        {
+            return key_states_[key] == KeyAction::Repeat || key_states_[key] == KeyAction::Press;
+        }
+
+        bool IsKeyUp(int key) const
+        {
+            return key_states_[key] == KeyAction::Release;
         }
 
         bool IsMouseButtonDown(int button) const
@@ -148,9 +184,16 @@ namespace SOGLR
             clear_color_ = color;
         }
 
+        void AddKeyCallback(int key, std::function<void(Window::KeyAction)> callback)
+        {
+            key_callbacks_[key].push_back(callback);
+        }
+
     private:
         GLFWwindow *window_;
         bool is_valid_ = false;
         glm::vec4 clear_color_ = {0.44f, 0.74f, 0.88f, 1.0f};
+        std::unordered_map<int, std::vector<std::function<void(KeyAction)>>> key_callbacks_;
+        std::array<KeyAction, GLFW_KEY_LAST> key_states_{KeyAction::Unknown};
     };
 }

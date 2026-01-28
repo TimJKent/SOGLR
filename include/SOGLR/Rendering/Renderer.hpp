@@ -115,7 +115,7 @@ namespace SOGLR
 
         void DrawSceneToFramebuffer(Scene &scene, std::shared_ptr<Framebuffer> framebuffer, std::shared_ptr<Advanced::Shadowmap> shadow_map, std::shared_ptr<Shader> depth_shader)
         {
-            if(shadow_map && depth_shader)
+            if (shadow_map && depth_shader)
             {
                 glEnable(GL_DEPTH_TEST);
                 glEnable(GL_CULL_FACE);
