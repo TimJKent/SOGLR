@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <filesystem>
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -14,10 +15,10 @@ namespace SOGLR
     class Shader
     {
     public:
-        Shader(const std::string &vertexPath, const std::string &fragmentPath)
+        Shader(const std::string &vertex_shader_code, const std::string &fragment_shader_code)
         {
-            uint32_t vertexShader = Compile(vertexPath, GL_VERTEX_SHADER);
-            uint32_t fragmentShader = Compile(fragmentPath, GL_FRAGMENT_SHADER);
+            uint32_t vertexShader = Compile(vertex_shader_code, GL_VERTEX_SHADER);
+            uint32_t fragmentShader = Compile(fragment_shader_code, GL_FRAGMENT_SHADER);
 
             if (vertexShader == 0 || fragmentShader == 0)
             {
@@ -52,7 +53,31 @@ namespace SOGLR
             }
         }
 
-        uint32_t Compile(const std::string &shaderPath, uint32_t type)
+        static Shader LoadFromFiles(const std::filesystem::path &vertexPath, const std::filesystem::path &fragmentPath)
+        {
+            std::string vertexCode;
+            std::string fragmentCode;
+
+            std::fstream vertexFile;
+            vertexFile.open(vertexPath, std::ios::in);
+            if (vertexFile.is_open())
+            {
+                vertexCode.assign((std::istreambuf_iterator<char>(vertexFile)), std::istreambuf_iterator<char>());
+                vertexFile.close();
+            }
+
+            std::fstream fragmentFile;
+            fragmentFile.open(fragmentPath, std::ios::in);
+            if (fragmentFile.is_open())
+            {
+                fragmentCode.assign((std::istreambuf_iterator<char>(fragmentFile)), std::istreambuf_iterator<char>());
+                fragmentFile.close();
+            }
+
+            return Shader(vertexCode, fragmentCode);
+        }
+
+        uint32_t CompileShaderFromFile(const std::filesystem::path &shaderPath, uint32_t type)
         {
             std::fstream shaderFile;
             shaderFile.open(shaderPath, std::ios::in);
@@ -66,8 +91,12 @@ namespace SOGLR
             std::string shaderCode((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
             shaderFile.close();
 
-            const char *shaderCodeCharPtr = shaderCode.c_str();
+            return Compile(shaderCode, type);
+        }
 
+        uint32_t Compile(const std::string &shader_code, uint32_t type)
+        {
+            const char *shaderCodeCharPtr = shader_code.c_str();
             uint32_t shader_id = glCreateShader(type);
             glShaderSource(shader_id, 1, &shaderCodeCharPtr, NULL);
             glCompileShader(shader_id);
