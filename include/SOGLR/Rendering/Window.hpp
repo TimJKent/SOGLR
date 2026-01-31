@@ -38,6 +38,18 @@ namespace SOGLR
             }
         }
 
+        static void FramebufferSizeCallback(GLFWwindow *window, int width, int height)
+        {
+            Window *win = static_cast<Window *>(glfwGetWindowUserPointer(window));
+            if (win)
+            {
+                for (auto &callback : win->window_resize_callbacks_)
+                {
+                    callback(glm::ivec2(width, height));
+                }
+            }
+        }
+
         static void ErrorCallback(int error, const char *description)
         {
             std::cerr << "GLFW Error (" << error << "): " << description << std::endl;
@@ -60,6 +72,7 @@ namespace SOGLR
             {
                 glfwSetWindowUserPointer(window_, this);
                 glfwSetKeyCallback(window_, KeyCallback);
+                glfwSetFramebufferSizeCallback(window_, FramebufferSizeCallback);
                 glfwMakeContextCurrent(window_);
 
                 gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -189,11 +202,17 @@ namespace SOGLR
             key_callbacks_[key].push_back(callback);
         }
 
+        void AddWindowResizeCallback(std::function<void(glm::ivec2)> callback)
+        {
+            window_resize_callbacks_.push_back(callback);
+        }
+
     private:
         GLFWwindow *window_;
         bool is_valid_ = false;
         glm::vec4 clear_color_ = {0.44f, 0.74f, 0.88f, 1.0f};
         std::unordered_map<int, std::vector<std::function<void(KeyAction)>>> key_callbacks_;
+        std::vector<std::function<void(glm::ivec2)>> window_resize_callbacks_;
         std::array<KeyAction, GLFW_KEY_LAST> key_states_{KeyAction::Unknown};
     };
 }
