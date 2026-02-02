@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <filesystem>
+#include <utility>
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -15,8 +18,57 @@ namespace SOGLR
     class Shader
     {
     public:
+        Shader(const Shader &) = delete;
+        Shader &operator=(const Shader &) = delete;
+
+        Shader(Shader &&other) noexcept
+        {
+            renderer_id_ = other.renderer_id_;
+            block_index_ = other.block_index_;
+            ubo_matrices_ = other.ubo_matrices_;
+            ubo_matrices_size_ = other.ubo_matrices_size_;
+
+            other.renderer_id_ = 0;
+            other.block_index_ = GL_INVALID_INDEX;
+            other.ubo_matrices_ = 0;
+            other.ubo_matrices_size_ = 0;
+        }
+
+        Shader &operator=(Shader &&other) noexcept
+        {
+            if (this == &other)
+            {
+                return *this;
+            }
+
+            if (ubo_matrices_ != 0)
+            {
+                glDeleteBuffers(1, &ubo_matrices_);
+            }
+            if (renderer_id_ != 0)
+            {
+                glDeleteProgram(renderer_id_);
+            }
+
+            renderer_id_ = other.renderer_id_;
+            block_index_ = other.block_index_;
+            ubo_matrices_ = other.ubo_matrices_;
+            ubo_matrices_size_ = other.ubo_matrices_size_;
+
+            other.renderer_id_ = 0;
+            other.block_index_ = GL_INVALID_INDEX;
+            other.ubo_matrices_ = 0;
+            other.ubo_matrices_size_ = 0;
+            return *this;
+        }
+
         Shader(const std::string &vertex_shader_code, const std::string &fragment_shader_code)
         {
+            renderer_id_ = 0;
+            block_index_ = GL_INVALID_INDEX;
+            ubo_matrices_ = 0;
+            ubo_matrices_size_ = 0;
+
             uint32_t vertexShader = Compile(vertex_shader_code, GL_VERTEX_SHADER);
             uint32_t fragmentShader = Compile(fragment_shader_code, GL_FRAGMENT_SHADER);
 
@@ -30,8 +82,25 @@ namespace SOGLR
             glAttachShader(renderer_id_, fragmentShader);
             glLinkProgram(renderer_id_);
 
+            int link_success = 0;
+            glGetProgramiv(renderer_id_, GL_LINK_STATUS, &link_success);
+            if (!link_success)
+            {
+                char infoLog[512];
+                glGetProgramInfoLog(renderer_id_, 512, NULL, infoLog);
+                std::cout << "ERROR::SHADER::LINK_FAILED\n"
+                          << infoLog << std::endl;
+                glDeleteProgram(renderer_id_);
+                renderer_id_ = 0;
+            }
+
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
+
+            if (renderer_id_ == 0)
+            {
+                return;
+            }
 
             // Set up UBO for camera matrices
             block_index_ = glGetUniformBlockIndex(renderer_id_, "Matrices");
@@ -41,11 +110,11 @@ namespace SOGLR
 
                 glGenBuffers(1, &ubo_matrices_);
                 glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices_);
-                size_t buffer_size = 2 * 64 + 4 * 16; // 2 mat4 + 4 vec4 (for 3 vec3 + 1 float)
-                glBufferData(GL_UNIFORM_BUFFER, buffer_size, NULL, GL_DYNAMIC_DRAW);
+                ubo_matrices_size_ = 2 * 64 + 4 * 16; // 2 mat4 + 4 vec4 (for 3 vec3 + 1 float)
+                glBufferData(GL_UNIFORM_BUFFER, ubo_matrices_size_, NULL, GL_DYNAMIC_DRAW);
                 glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-                glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices_, 0, buffer_size);
+                glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices_, 0, ubo_matrices_size_);
             }
             else
             {
@@ -75,6 +144,30 @@ namespace SOGLR
             }
 
             return Shader(vertexCode, fragmentCode);
+        }
+
+        static std::shared_ptr<Shader> LoadSharedFromFiles(const std::filesystem::path &vertexPath, const std::filesystem::path &fragmentPath)
+        {
+            std::string vertexCode;
+            std::string fragmentCode;
+
+            std::fstream vertexFile;
+            vertexFile.open(vertexPath, std::ios::in);
+            if (vertexFile.is_open())
+            {
+                vertexCode.assign((std::istreambuf_iterator<char>(vertexFile)), std::istreambuf_iterator<char>());
+                vertexFile.close();
+            }
+
+            std::fstream fragmentFile;
+            fragmentFile.open(fragmentPath, std::ios::in);
+            if (fragmentFile.is_open())
+            {
+                fragmentCode.assign((std::istreambuf_iterator<char>(fragmentFile)), std::istreambuf_iterator<char>());
+                fragmentFile.close();
+            }
+
+            return std::make_shared<Shader>(vertexCode, fragmentCode);
         }
 
         uint32_t CompileShaderFromFile(const std::filesystem::path &shaderPath, uint32_t type)
@@ -108,6 +201,9 @@ namespace SOGLR
                 glGetShaderInfoLog(shader_id, 512, NULL, infoLog);
                 std::cout << "ERROR::SHADER::COMPILATION_FAILED\n"
                           << infoLog << std::endl;
+
+                glDeleteShader(shader_id);
+                return 0;
             }
 
             return shader_id;
@@ -119,12 +215,22 @@ namespace SOGLR
             {
                 glDeleteBuffers(1, &ubo_matrices_);
             }
-            glDeleteProgram(renderer_id_);
+            if (renderer_id_ != 0)
+            {
+                glDeleteProgram(renderer_id_);
+            }
         }
 
         void Bind() const
         {
             glUseProgram(renderer_id_);
+
+            // Binding points are global OpenGL state. If you have multiple shaders, they will
+            // overwrite binding point 0 unless we rebind this shader's UBO here.
+            if (ubo_matrices_ != 0 && ubo_matrices_size_ != 0)
+            {
+                glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices_, 0, ubo_matrices_size_);
+            }
         }
 
         void Unbind() const
@@ -195,8 +301,9 @@ namespace SOGLR
         }
 
     private:
-        uint32_t renderer_id_;
-        uint32_t block_index_;
-        uint32_t ubo_matrices_;
+        uint32_t renderer_id_ = 0;
+        uint32_t block_index_ = GL_INVALID_INDEX;
+        uint32_t ubo_matrices_ = 0;
+        size_t ubo_matrices_size_ = 0;
     };
 } // namespace SOGLR
