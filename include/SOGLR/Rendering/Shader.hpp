@@ -122,7 +122,7 @@ namespace SOGLR
             }
         }
 
-        static Shader LoadFromFiles(const std::filesystem::path &vertexPath, const std::filesystem::path &fragmentPath)
+        static std::shared_ptr<Shader> LoadFromFiles(const std::filesystem::path &vertexPath, const std::filesystem::path &fragmentPath)
         {
             std::string vertexCode;
             std::string fragmentCode;
@@ -143,7 +143,7 @@ namespace SOGLR
                 fragmentFile.close();
             }
 
-            return Shader(vertexCode, fragmentCode);
+            return std::make_shared<Shader>(vertexCode, fragmentCode);
         }
 
         static std::shared_ptr<Shader> LoadSharedFromFiles(const std::filesystem::path &vertexPath, const std::filesystem::path &fragmentPath)
